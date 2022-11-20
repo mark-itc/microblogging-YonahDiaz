@@ -1,0 +1,110 @@
+.App {
+  min-height: 100vh;
+  min-width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #15202b;
+  position: relative;
+}
+
+.text-area {
+  box-sizing: border-box;
+  background-color: #15202b;
+  width: 600px;
+  height: 180px;
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 19px;
+  color: white;
+  margin-top: 5px;
+  border: 2px solid #cccccc;
+  border-radius: 6px;
+  resize: none;
+  position: absolute;
+}
+
+.tweet-button {
+  position: absolute;
+  width: 68px;
+  height: 34px;
+  left: 520px;
+  top: 133px;
+  background: #007bff;
+  border-radius: 4px;
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 19px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #ffffff;
+}
+
+.text-and-button-container {
+  position: relative;
+  width: 600px;
+  height: 180px;
+}
+
+.tweets-container {
+  width: 600px;
+  height: 100px;
+  margin-top: 20px;
+  background: #343a40;
+  border-radius: 6px;
+}
+
+.name-date {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 15px;
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  color: #6c757d;
+}
+
+.tweet-content {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  color: #ffffff;
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+.tweets-list-container {
+  width: 600px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.error-140 {
+  position: absolute;
+  width: 338px;
+  height: 29px;
+  left: 15px;
+  top: 136px;
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 19px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #721c24;
+}
