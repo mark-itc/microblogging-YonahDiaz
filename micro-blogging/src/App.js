@@ -27,22 +27,27 @@ function Button(props) {
 function Tweets(props) {
   return (
     <div>
-      {props.tweets
-        .slice(0)
-        .reverse()
-        .map((element, index) => (
-          <div key={index} className="tweets-container">
-            <div className="name-date">
-              <div>{element[0]}</div>
-              <div>{element[1]}</div>
-            </div>
-            <div className="tweet-content">{element[2]}</div>
+      {props.tweets.map((element, index) => (
+        <div key={index} className="tweets-container">
+          <div className="name-date">
+            <div>{element.userName}</div>
+            <div>{element.date}</div>
           </div>
-        ))}
+          <div className="tweet-content">{element.content}</div>
+        </div>
+      ))}
     </div>
   );
 }
-
+function Loading(props) {
+  if (props.isPending === true) {
+    return (
+      <div>
+        <div className="loader"></div>
+      </div>
+    );
+  }
+}
 function Error140(props) {
   if (props.text.length > 140) {
     return (
@@ -55,27 +60,56 @@ function Error140(props) {
 
 function App() {
   const [text, setText] = useState("");
-  const [tweets, setTweets] = useState(() => {
-    return JSON.parse(localStorage.getItem("saved-tweets")) || [];
-  });
 
+  async function fetchTweets() {
+    try {
+      const response = await fetch(
+        "https://micro-blogging-dot-full-stack-course-services.ew.r.appspot.com/tweet"
+      );
+      const results = await response.json();
+      setTweets(results.tweets);
+    } catch (err) {
+      throw err;
+    }
+  }
+  const [tweets, setTweets] = useState([]);
+  const [isPending, setIsPending] = useState(false);
+  useEffect(() => {
+    fetchTweets();
+  }, []);
   const handleChangeText = (event) => {
     setText(event.target.value);
   };
-  const addTweetOnClick = () => {
-    if (text.length > 140) {
-      return;
-    } else {
-      setTweets((tweetsArray) => [
-        ...tweetsArray,
-        [["Name"], [new Date().toLocaleString()], [text]],
-      ]);
-    }
+  const sendTweet = () => {
+    setIsPending(true);
+    const tweetToSend = {
+      content: text,
+      userName: "Yonah",
+      date: String(new Date().toISOString()),
+    };
+
+    fetch(
+      "https://micro-blogging-dot-full-stack-course-services.ew.r.appspot.com/tweet",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(tweetToSend),
+      }
+    )
+      .then(() => {
+        fetchTweets();
+        setIsPending(false);
+      })
+      .catch((err) => {
+        alert(err.message);
+      });
   };
-  useEffect(() => {
-    if (tweets !== null)
-      localStorage.setItem("saved-tweets", JSON.stringify(tweets));
-  }, [tweets]);
+  const addTweetOnClick = () => {
+    if (text.length > 140 || isPending === true || text.length < 1) {
+      return;
+    } else sendTweet();
+  };
+
   return (
     <div className="App">
       <div className="text-and-button-container">
@@ -83,9 +117,12 @@ function App() {
         <Button onClick={addTweetOnClick} />
         <Error140 text={text} />
       </div>
-      <div className="tweets-list-container">
-        <Tweets tweets={tweets} />
-      </div>
+      {
+        <div className="tweets-list-container">
+          <Loading isPending={isPending} />
+          {<Tweets tweets={tweets} />}
+        </div>
+      }
     </div>
   );
 }
