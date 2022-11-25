@@ -120,7 +120,7 @@ function App() {
       {
         <div className="tweets-list-container">
           <Loading isPending={isPending} />
-          {<Tweets tweets={tweets} />}
+          <Tweets tweets={tweets} />
         </div>
       }
     </div>
