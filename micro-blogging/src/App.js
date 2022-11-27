@@ -2,28 +2,53 @@ import "./App.css";
 import { Routes, Route, Link } from "react-router-dom";
 import Home from "./views/Home";
 import Profile from "./views/Profile";
-
-function App() {
+import { createContext, useState } from "react";
+export const AppContext = createContext();
+function NavBar() {
   return (
-    <div className="App">
-      <div className="nav-bar">
-        <div className="links-container">
-          <div>
-            <Link to="/" className="links">
-              Home
-            </Link>
-          </div>
-          <div>
-            <Link to="/profile" className="links">
-              Profile
-            </Link>
-          </div>
+    <div className="nav-bar">
+      <div className="links-container">
+        <div>
+          <Link to="/" className="links">
+            Home
+          </Link>
+        </div>
+        <div>
+          <Link to="/profile" className="links">
+            Profile
+          </Link>
         </div>
       </div>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/profile" element={<Profile />} />
-      </Routes>
+    </div>
+  );
+}
+
+function App() {
+  const [text, setText] = useState("");
+  const [tweets, setTweets] = useState([]);
+  const [isPending, setIsPending] = useState(false);
+  const [NewUserName, setNewUserName] = useState("");
+
+  return (
+    <div className="App">
+      <AppContext.Provider
+        value={{
+          text,
+          setText,
+          tweets,
+          setTweets,
+          isPending,
+          setIsPending,
+          NewUserName,
+          setNewUserName,
+        }}
+      >
+        <NavBar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/profile" element={<Profile />} />
+        </Routes>
+      </AppContext.Provider>
     </div>
   );
 }

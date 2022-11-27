@@ -1,12 +1,12 @@
 import "./Profile.css";
-import { useState } from "react";
-
+import { useContext } from "react";
+import { AppContext } from "../App";
 function InputUserName(props) {
   return (
     <div>
       <div className="prof-title">Profile</div>
       <div className="user-name">User Name</div>
-      <textarea className="user-name-area" onChange={props.onChange}></textarea>
+      <input className="user-name-area" onChange={props.onChange}></input>
     </div>
   );
 }
@@ -22,14 +22,15 @@ function SaveProfileButton(props) {
 }
 
 function Profile() {
-  const [userName, setUserName] = useState("");
+  const { NewUserName, setNewUserName } = useContext(AppContext);
+
   const handleChangeText = (event) => {
-    setUserName(event.target.value);
+    setNewUserName(event.target.value);
   };
   const saveUserOnClick = () => {
-    if (userName === "") {
+    if (NewUserName === "") {
       return;
-    } else localStorage.setItem("userName", userName);
+    } else localStorage.setItem("userName", NewUserName);
   };
   return (
     <div className="Profile">

@@ -8,7 +8,7 @@
   position: relative;
 }
 
-.text-area {
+.text-input {
   box-sizing: border-box;
   background-color: #15202b;
   width: 600px;
@@ -21,8 +21,8 @@
   color: white;
   border: 2px solid #cccccc;
   border-radius: 6px;
-  resize: none;
   position: absolute;
+  resize: none;
 }
 
 .tweet-button {

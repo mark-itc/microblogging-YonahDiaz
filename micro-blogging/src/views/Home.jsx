@@ -1,12 +1,13 @@
 import "./Home.css";
 import { useState } from "react";
 import { useEffect } from "react";
-
+import { useContext } from "react";
+import { AppContext } from "../App";
 function WriteATweet(props) {
   return (
     <div>
       <textarea
-        className="text-area"
+        className="text-input"
         placeholder="What you have in mind..."
         onChange={props.onChange}
       ></textarea>
@@ -24,10 +25,11 @@ function Button(props) {
   );
 }
 
-function Tweets(props) {
+function Tweets() {
+  const { tweets } = useContext(AppContext);
   return (
     <div>
-      {props.tweets.map((element, index) => (
+      {tweets.map((element, index) => (
         <div key={index} className="tweets-container">
           <div className="name-date">
             <div>{element.userName}</div>
@@ -40,8 +42,9 @@ function Tweets(props) {
   );
 }
 
-function Loading(props) {
-  if (props.isPending === true) {
+function Loading() {
+  const { isPending } = useContext(AppContext);
+  if (isPending === true) {
     return (
       <div>
         <div className="loader"></div>
@@ -50,8 +53,9 @@ function Loading(props) {
   }
 }
 
-function Error140(props) {
-  if (props.text.length > 140) {
+function Error140() {
+  const { text } = useContext(AppContext);
+  if (text.length > 140) {
     return (
       <div className="error-140">
         <div>The tweet can't contain more then 140 chars.</div>
@@ -61,9 +65,8 @@ function Error140(props) {
 }
 
 function Home() {
-  const [text, setText] = useState("");
-  const [tweets, setTweets] = useState([]);
-  const [isPending, setIsPending] = useState(false);
+  const { text, setText, setTweets, isPending, setIsPending, tweets } =
+    useContext(AppContext);
   const [userName] = useState(() => localStorage.getItem("userName"));
   async function fetchTweets() {
     try {
@@ -77,8 +80,20 @@ function Home() {
     }
   }
 
+  const setLocalTweet = () => {
+    const localTweet = {
+      content: text,
+      userName: userName,
+      date: String(new Date().toISOString()),
+    };
+    tweets.unshift(localTweet);
+  };
+
   useEffect(() => {
     fetchTweets();
+    setInterval(() => {
+      fetchTweets();
+    }, 10000);
   }, []);
 
   const handleChangeText = (event) => {
@@ -86,8 +101,8 @@ function Home() {
   };
 
   const sendTweet = () => {
+    setLocalTweet();
     setIsPending(true);
-
     const tweetToSend = {
       content: text,
       userName: userName,
@@ -103,7 +118,6 @@ function Home() {
       }
     )
       .then(() => {
-        fetchTweets();
         setIsPending(false);
       })
       .catch((err) => {
@@ -122,11 +136,11 @@ function Home() {
       <div className="text-and-button-container">
         <WriteATweet onChange={handleChangeText} />
         <Button onClick={addTweetOnClick} />
-        <Error140 text={text} />
+        <Error140 />
       </div>
       <div className="tweets-list-container">
-        <Loading isPending={isPending} />
-        <Tweets tweets={tweets} />
+        <Loading />
+        <Tweets />
       </div>
     </div>
   );
