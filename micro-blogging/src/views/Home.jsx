@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { useContext } from "react";
 import { AppContext } from "../App";
+
 function WriteATweet(props) {
   return (
     <div>
@@ -80,6 +81,13 @@ function Home() {
     }
   }
 
+  useEffect(() => {
+    fetchTweets();
+    setInterval(() => {
+      fetchTweets();
+    }, 10000);
+  }, []);
+
   const setLocalTweet = () => {
     const localTweet = {
       content: text,
@@ -88,13 +96,6 @@ function Home() {
     };
     tweets.unshift(localTweet);
   };
-
-  useEffect(() => {
-    fetchTweets();
-    setInterval(() => {
-      fetchTweets();
-    }, 10000);
-  }, []);
 
   const handleChangeText = (event) => {
     setText(event.target.value);

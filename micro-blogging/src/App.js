@@ -4,6 +4,7 @@ import Home from "./views/Home";
 import Profile from "./views/Profile";
 import { createContext, useState } from "react";
 export const AppContext = createContext();
+
 function NavBar() {
   return (
     <div className="nav-bar">

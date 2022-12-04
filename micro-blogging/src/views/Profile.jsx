@@ -6,7 +6,7 @@ function InputUserName(props) {
     <div>
       <div className="prof-title">Profile</div>
       <div className="user-name">User Name</div>
-      <input className="user-name-area" onChange={props.onChange}></input>
+      <input className="user-name-input" onChange={props.onChange}></input>
     </div>
   );
 }
@@ -22,15 +22,15 @@ function SaveProfileButton(props) {
 }
 
 function Profile() {
-  const { NewUserName, setNewUserName } = useContext(AppContext);
+  const { newUserName, setNewUserName } = useContext(AppContext);
 
   const handleChangeText = (event) => {
     setNewUserName(event.target.value);
   };
   const saveUserOnClick = () => {
-    if (NewUserName === "") {
+    if (newUserName === "") {
       return;
-    } else localStorage.setItem("userName", NewUserName);
+    } else localStorage.setItem("userName", newUserName);
   };
   return (
     <div className="Profile">
