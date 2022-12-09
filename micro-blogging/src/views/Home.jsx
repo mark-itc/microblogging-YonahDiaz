@@ -5,10 +5,12 @@ import { useContext } from "react";
 import { AppContext } from "../App";
 
 function WriteATweet(props) {
+  const { text } = useContext(AppContext);
   return (
     <div>
       <textarea
         className="text-input"
+        value={text}
         placeholder="What you have in mind..."
         onChange={props.onChange}
       ></textarea>
@@ -130,6 +132,7 @@ function Home() {
     if (text.length > 140 || isPending === true || text.length < 1) {
       return;
     } else sendTweet();
+    setText("");
   };
 
   return (

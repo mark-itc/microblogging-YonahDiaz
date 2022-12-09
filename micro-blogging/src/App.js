@@ -28,7 +28,7 @@ function App() {
   const [text, setText] = useState("");
   const [tweets, setTweets] = useState([]);
   const [isPending, setIsPending] = useState(false);
-  const [NewUserName, setNewUserName] = useState("");
+  const [newUserName, setNewUserName] = useState("");
 
   return (
     <div className="App">
@@ -40,7 +40,7 @@ function App() {
           setTweets,
           isPending,
           setIsPending,
-          NewUserName,
+          newUserName,
           setNewUserName,
         }}
       >
