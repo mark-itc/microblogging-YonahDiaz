@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { useContext } from "react";
 import { AppContext } from "../App";
+import { collection, getDocs, addDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
 function WriteATweet(props) {
   const { text } = useContext(AppContext);
@@ -28,14 +30,13 @@ function Button(props) {
   );
 }
 
-function Tweets() {
-  const { tweets } = useContext(AppContext);
+function Tweets(props) {
   return (
     <div>
-      {tweets.map((element, index) => (
+      {props.tweet.map((element, index) => (
         <div key={index} className="tweets-container">
           <div className="name-date">
-            <div>{element.userName}</div>
+            <div>{element.name}</div>
             <div>{element.date}</div>
           </div>
           <div className="tweet-content">{element.content}</div>
@@ -68,70 +69,52 @@ function Error140() {
 }
 
 function Home() {
-  const { text, setText, setTweets, isPending, setIsPending, tweets } =
-    useContext(AppContext);
-  const [userName] = useState(() => localStorage.getItem("userName"));
-  async function fetchTweets() {
-    try {
-      const response = await fetch(
-        "https://micro-blogging-dot-full-stack-course-services.ew.r.appspot.com/tweet"
-      );
-      const results = await response.json();
-      setTweets(results.tweets);
-    } catch (err) {
-      throw err;
-    }
-  }
-
+  const [user, setUser] = useState("");
+  const [tweets, setTweets] = useState([]);
+  const usersCollectionRef = collection(db, "user");
+  const tweetCollectionRef = collection(db, "tweet");
+  const getUsers = async () => {
+    const data = await getDocs(usersCollectionRef);
+    setUser(data.docs.map((doc) => ({ ...doc.data() })));
+  };
+  const getTweet = async () => {
+    const data = await getDocs(tweetCollectionRef);
+    setTweets(data.docs.map((doc) => ({ ...doc.data() })));
+  };
   useEffect(() => {
-    fetchTweets();
-    setInterval(() => {
-      fetchTweets();
-    }, 10000);
+    getUsers();
+    getTweet();
   }, []);
 
-  const setLocalTweet = () => {
-    const localTweet = {
-      content: text,
-      userName: userName,
-      date: String(new Date().toISOString()),
-    };
-    tweets.unshift(localTweet);
-  };
+  const { text, setText, isPending, setIsPending } = useContext(AppContext);
+
+  useEffect(() => {
+    getTweet();
+  }, []);
 
   const handleChangeText = (event) => {
     setText(event.target.value);
   };
 
-  const sendTweet = () => {
-    setLocalTweet();
-    setIsPending(true);
-    const tweetToSend = {
-      content: text,
-      userName: userName,
-      date: String(new Date().toISOString()),
-    };
-
-    fetch(
-      "https://micro-blogging-dot-full-stack-course-services.ew.r.appspot.com/tweet",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(tweetToSend),
-      }
-    )
-      .then(() => {
-        setIsPending(false);
-      })
-      .catch((err) => {
-        alert(err.message);
+  const createTweet = async () => {
+    if (user === "" || text === "") {
+      return;
+    } else {
+      setIsPending(true);
+      await addDoc(tweetCollectionRef, {
+        name: user[0].name,
+        content: text,
+        date: String(new Date().toISOString()),
       });
+      setIsPending(false);
+      getTweet();
+    }
   };
 
   const addTweetOnClick = () => {
     if (text.length > 140 || isPending === true || text.length < 1) {
       return;
-    } else sendTweet();
+    } else createTweet();
     setText("");
   };
 
@@ -144,7 +127,7 @@ function Home() {
       </div>
       <div className="tweets-list-container">
         <Loading />
-        <Tweets />
+        <Tweets tweet={tweets} />
       </div>
     </div>
   );

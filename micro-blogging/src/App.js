@@ -11,12 +11,13 @@ function NavBar() {
       <div className="links-container">
         <div>
           <Link to="/" className="links">
-            Home
+            Login
           </Link>
         </div>
+
         <div>
-          <Link to="/profile" className="links">
-            Profile
+          <Link to="/Tweets" className="links">
+            Tweets
           </Link>
         </div>
       </div>
@@ -46,8 +47,8 @@ function App() {
       >
         <NavBar />
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/Tweets" element={<Home />} />
+          <Route path="/" element={<Profile />} />
         </Routes>
       </AppContext.Provider>
     </div>
