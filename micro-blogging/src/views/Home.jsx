@@ -3,8 +3,28 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { useContext } from "react";
 import { AppContext } from "../App";
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import {
+  query,
+  collection,
+  addDoc,
+  onSnapshot,
+  orderBy,
+  limit,
+} from "firebase/firestore";
 import { db } from "../firebase";
+
+function Profile() {
+  const { name, email, profilePic } = useContext(AppContext);
+  return (
+    <div className="profile-container">
+      <img className="profile-pic" alt="" src={profilePic} />
+      <br></br>
+      <div>User Name: {name}</div>
+      <br></br>
+      <div>Email: {email}</div>
+    </div>
+  );
+}
 
 function WriteATweet(props) {
   const { text } = useContext(AppContext);
@@ -68,26 +88,40 @@ function Error140() {
   }
 }
 
+function BotonNext(props) {
+  return (
+    <div>
+      <button className="boton-next" onClick={props.onClick}>
+        Next
+      </button>
+    </div>
+  );
+}
+
 function Home() {
-  const [user, setUser] = useState("");
+  const [stopNext, setStopNext] = useState(false);
+  let [latestDoc, setLatestDoc] = useState(10);
   const [tweets, setTweets] = useState([]);
-  const usersCollectionRef = collection(db, "user");
+  const { text, setText, isPending, setIsPending, name } =
+    useContext(AppContext);
   const tweetCollectionRef = collection(db, "tweet");
-  const getUsers = async () => {
-    const data = await getDocs(usersCollectionRef);
-    setUser(data.docs.map((doc) => ({ ...doc.data() })));
-  };
+  const qRef = query(
+    tweetCollectionRef,
+    orderBy("date", "desc"),
+
+    limit(latestDoc)
+  );
   const getTweet = async () => {
-    const data = await getDocs(tweetCollectionRef);
-    setTweets(data.docs.map((doc) => ({ ...doc.data() })));
+    onSnapshot(qRef, (snapshot) => {
+      setTweets(snapshot.docs.map((doc) => ({ ...doc.data() })));
+      setLatestDoc((latestDoc += 10));
+      if (snapshot.empty) {
+        setStopNext(true);
+      }
+      console.log(snapshot.docs);
+      console.log(stopNext);
+    });
   };
-  useEffect(() => {
-    getUsers();
-    getTweet();
-  }, []);
-
-  const { text, setText, isPending, setIsPending } = useContext(AppContext);
-
   useEffect(() => {
     getTweet();
   }, []);
@@ -97,17 +131,16 @@ function Home() {
   };
 
   const createTweet = async () => {
-    if (user === "" || text === "") {
+    if (name === "" || text === "") {
       return;
     } else {
       setIsPending(true);
       await addDoc(tweetCollectionRef, {
-        name: user[0].name,
+        name: name,
         content: text,
         date: String(new Date().toISOString()),
       });
       setIsPending(false);
-      getTweet();
     }
   };
 
@@ -118,8 +151,17 @@ function Home() {
     setText("");
   };
 
+  const next = () => {
+    if (stopNext === true) {
+      return;
+    } else {
+      getTweet();
+    }
+  };
+
   return (
     <div className="Home">
+      <Profile />
       <div className="text-and-button-container">
         <WriteATweet onChange={handleChangeText} />
         <Button onClick={addTweetOnClick} />
@@ -128,6 +170,7 @@ function Home() {
       <div className="tweets-list-container">
         <Loading />
         <Tweets tweet={tweets} />
+        <BotonNext onClick={next} />
       </div>
     </div>
   );

@@ -27,27 +27,32 @@ function NavBar() {
 
 function App() {
   const [text, setText] = useState("");
-  const [tweets, setTweets] = useState([]);
   const [isPending, setIsPending] = useState(false);
-  const [newUserName, setNewUserName] = useState("");
-
+  const [name, setName] = useState("");
+  const [isLogged, setIsLogged] = useState(false);
+  const [email, setEmail] = useState([]);
+  const [profilePic, setProfilePic] = useState([]);
   return (
     <div className="App">
       <AppContext.Provider
         value={{
           text,
           setText,
-          tweets,
-          setTweets,
           isPending,
           setIsPending,
-          newUserName,
-          setNewUserName,
+          name,
+          setName,
+          isLogged,
+          setIsLogged,
+          email,
+          setEmail,
+          profilePic,
+          setProfilePic,
         }}
       >
         <NavBar />
         <Routes>
-          <Route path="/Tweets" element={<Home />} />
+          <Route path="/Tweets" element={isLogged ? <Home /> : <Profile />} />
           <Route path="/" element={<Profile />} />
         </Routes>
       </AppContext.Provider>
