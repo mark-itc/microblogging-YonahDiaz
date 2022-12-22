@@ -118,8 +118,6 @@ function Home() {
       if (snapshot.empty) {
         setStopNext(true);
       }
-      console.log(snapshot.docs);
-      console.log(stopNext);
     });
   };
   useEffect(() => {
